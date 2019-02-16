@@ -16,7 +16,6 @@ void callbackDispatcher() {
   WidgetsFlutterBinding.ensureInitialized();
 
   _backgroundChannel.setMethodCallHandler((MethodCall call) async {
-    print("Callback Dispatcher Invoked: ${call.arguments}");
     final List<dynamic> args = call.arguments;
     final Function callback = PluginUtilities.getCallbackFromHandle(
         CallbackHandle.fromRawHandle(args[0]));
@@ -32,6 +31,5 @@ void callbackDispatcher() {
     final GeofenceEvent event = intToGeofenceEvent(args[3]);
     callback(triggeringGeofences, triggeringLocation, event);
   });
-  print('GeofencingPlugin dispatcher started');
   _backgroundChannel.invokeMethod('GeofencingService.initialized');
 }

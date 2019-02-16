@@ -8,7 +8,7 @@
 
 @implementation GeofencingPlugin {
   CLLocationManager *_locationManager;
-  FlutterHeadlessDartRunner *_headlessRunner;
+  FlutterEngine *_headlessRunner;
   FlutterMethodChannel *_callbackChannel;
   FlutterMethodChannel *_mainChannel;
   NSObject<FlutterPluginRegistrar> *_registrar;
@@ -23,6 +23,7 @@ static const int kEnterEvent = 1;
 static const int kExitEvent = 2;
 static const NSString *kCallbackMapping = @"geofence_region_callback_mapping";
 static GeofencingPlugin *instance = nil;
+static FlutterPluginRegistrantCallback registerPlugins = nil;
 static BOOL initialized = NO;
 
 #pragma mark FlutterPlugin Methods
@@ -30,11 +31,14 @@ static BOOL initialized = NO;
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   @synchronized(self) {
     if (instance == nil) {
-      NSLog(@"Registering with registrar");
       instance = [[GeofencingPlugin alloc] init:registrar];
       [registrar addApplicationDelegate:instance];
     }
   }
+}
+
++ (void)setPluginRegistrantCallback:(FlutterPluginRegistrantCallback)callback {
+  registerPlugins = callback;
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
@@ -50,7 +54,6 @@ static BOOL initialized = NO;
         // Send the geofence events that occurred while the background
         // isolate was initializing.
         while ([_eventQueue count] > 0) {
-            NSLog(@"DUMPING QUEUE");
             NSDictionary* event = _eventQueue[0];
             [_eventQueue removeObjectAtIndex:0];
             CLRegion* region = [event objectForKey:kRegionKey];
@@ -84,7 +87,6 @@ static BOOL initialized = NO;
 #pragma mark LocationManagerDelegate Methods
 - (void)locationManager:(CLLocationManager *)manager didEnterRegion:(CLRegion *)region {
   @synchronized(self) {
-    NSLog(@"Entered Location");
     if (initialized) {
       [self sendLocationEvent:region eventType:kEnterEvent];
     } else {
@@ -99,7 +101,6 @@ static BOOL initialized = NO;
 
 - (void)locationManager:(CLLocationManager *)manager didExitRegion:(CLRegion *)region {
   @synchronized(self) {
-    NSLog(@"Exited location");
     if (initialized) {
       [self sendLocationEvent:region eventType:kExitEvent];
     } else {
@@ -115,7 +116,6 @@ static BOOL initialized = NO;
 - (void)locationManager:(CLLocationManager *)manager
     monitoringDidFailForRegion:(CLRegion *)region
                      withError:(NSError *)error {
-  NSLog(@"Monitoring error %@: %@", error.code, error.localizedDescription);
 }
 
 #pragma mark GeofencingPlugin Methods
@@ -141,7 +141,7 @@ static BOOL initialized = NO;
   [_locationManager requestAlwaysAuthorization];
   _locationManager.allowsBackgroundLocationUpdates = YES;
 
-  _headlessRunner = [[FlutterHeadlessDartRunner alloc] init];
+  _headlessRunner = [[FlutterEngine alloc] initWithName:@"GeofencingIsolate" project:nil allowHeadlessExecution:YES];
   _registrar = registrar;
 
   _mainChannel = [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/geofencing_plugin"
@@ -155,18 +155,23 @@ static BOOL initialized = NO;
 }
 
 - (void)startGeofencingService:(int64_t)handle {
-  NSLog(@"Initializing GeofencingService");
   [self setCallbackDispatcherHandle:handle];
   FlutterCallbackInformation *info = [FlutterCallbackCache lookupCallbackInformation:handle];
   NSAssert(info != nil, @"failed to find callback");
   NSString *entrypoint = info.callbackName;
   NSString *uri = info.callbackLibraryPath;
-  [_headlessRunner runWithEntrypointAndLibraryUri:entrypoint libraryUri:uri];
+  [_headlessRunner runWithEntrypoint:entrypoint libraryURI:uri];
+  NSAssert(registerPlugins != nil, @"failed to set registerPlugins");
+
+  // Once our headless runner has been started, we need to register the application's plugins
+  // with the runner in order for them to work on the background isolate. `registerPlugins` is
+  // a callback set from AppDelegate.m in the main application. This callback should register
+  // all relevant plugins (excluding those which require UI).
+  registerPlugins(_headlessRunner);
   [_registrar addMethodCallDelegate:self channel:_callbackChannel];
 }
 
 - (void)registerGeofence:(NSArray *)arguments {
-  NSLog(@"RegisterGeofence: %@", arguments);
   int64_t callbackHandle = [arguments[0] longLongValue];
   NSString *identifier = arguments[1];
   double latitude = [arguments[2] doubleValue];
@@ -186,7 +191,6 @@ static BOOL initialized = NO;
 }
 
 - (BOOL)removeGeofence:(NSArray *)arguments {
-  NSLog(@"RemoveGeofence: %@", arguments);
   NSString *identifier = arguments[0];
   for (CLRegion *region in [self->_locationManager monitoredRegions]) {
     if ([region.identifier isEqual:identifier]) {
