@@ -1,3 +1,6 @@
+This is based on Ben Konyi geofencing library, supporting AndroidX
+Following is the documentation provided by him
+
 # Geofencing
 
 A sample geofencing plugin with background execution support for Flutter.
