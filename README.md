@@ -1,3 +1,6 @@
+What is geofencing? 
+[here](https://developer.android.com/training/location/geofencing)
+
 This is based on Ben Konyi geofencing library, supporting AndroidX
 Following is the documentation provided by him
 
