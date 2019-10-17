@@ -6,8 +6,9 @@ package io.flutter.plugins.geofencing
 
 import android.content.Context
 import android.content.Intent
-import androidx.core.app.JobIntentService
+import android.os.Handler
 import android.util.Log
+import androidx.core.app.JobIntentService
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
@@ -144,7 +145,7 @@ class GeofencingService : MethodCallHandler, JobIntentService() {
                 queue.add(geofenceUpdateList)
             } else {
                 // Callback method name is intentionally left blank.
-                mBackgroundChannel.invokeMethod("", geofenceUpdateList)
+                Handler(mContext.mainLooper).post { mBackgroundChannel.invokeMethod("", geofenceUpdateList) }
             }
         }
     }
