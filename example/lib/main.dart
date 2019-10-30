@@ -7,7 +7,7 @@ import 'dart:isolate';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:geofencing/flutter_geofencing.dart';
+import 'package:geofencing/geofencing.dart';
 
 void main() => runApp(MyApp());
 
