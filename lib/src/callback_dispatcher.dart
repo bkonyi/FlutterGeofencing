@@ -7,8 +7,8 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'package:flutter_geofencing/src/geofencing.dart';
-import 'package:flutter_geofencing/src/location.dart';
+import 'package:geofencing/src/geofencing.dart';
+import 'package:geofencing/src/location.dart';
 
 void callbackDispatcher() {
   const MethodChannel _backgroundChannel =
