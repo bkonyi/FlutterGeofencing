@@ -212,7 +212,7 @@ class GeofencingPlugin(context: Context, activity: Activity?) : MethodCallHandle
     }
 
     override fun onMethodCall(call: MethodCall, result: Result) {
-        val args = call.arguments() as? ArrayList<*>
+        val args = call.arguments<ArrayList<*>>()
         when(call.method) {
             "GeofencingPlugin.initializeService" -> {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
