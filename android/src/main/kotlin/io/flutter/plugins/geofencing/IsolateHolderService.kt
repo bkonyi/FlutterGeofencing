@@ -11,8 +11,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.IBinder
 import android.os.PowerManager
-import android.support.v4.app.NotificationCompat
-import android.util.Log
+import androidx.core.app.NotificationCompat
 import io.flutter.view.FlutterNativeView
 
 class IsolateHolderService : Service() {

@@ -1,3 +1,6 @@
+What is geofencing? 
+[here](https://developer.android.com/training/location/geofencing)
+
 # Geofencing
 
 A sample geofencing plugin with background execution support for Flutter.
