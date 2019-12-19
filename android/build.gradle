@@ -2,7 +2,7 @@ group 'io.flutter.plugins.geofencing'
 version '1.0-SNAPSHOT'
 
 buildscript {
-    ext.kotlin_version = '1.3.0'
+    ext.kotlin_version = '1.3.30'
     repositories {
         google()
         jcenter()
