@@ -61,6 +61,10 @@ class GeofencingService : MethodCallHandler, JobIntentService() {
                         GeofencingPlugin.SHARED_PREFERENCES_KEY,
                         Context.MODE_PRIVATE)
                         .getLong(GeofencingPlugin.CALLBACK_DISPATCHER_HANDLE_KEY, 0)
+                if (callbackHandle == 0) {
+                    Log.e(TAG, "Fatal: no callback registered")
+                    return
+                }
 
                 val callbackInfo = FlutterCallbackInformation.lookupCallbackInformation(callbackHandle)
                 if (callbackInfo == null) {
