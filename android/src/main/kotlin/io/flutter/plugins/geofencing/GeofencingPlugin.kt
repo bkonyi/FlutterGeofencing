@@ -132,6 +132,8 @@ class GeofencingPlugin(context: Context, activity: Activity?) : MethodCallHandle
                 var persistentGeofences = p.getStringSet(PERSISTENT_GEOFENCES_IDS, null)
                 if (persistentGeofences == null) {
                     persistentGeofences = HashSet<String>()
+                } else {
+                    persistentGeofences = HashSet<String>(persistentGeofences)
                 }
                 persistentGeofences.add(id)
                 context.getSharedPreferences(SHARED_PREFERENCES_KEY, Context.MODE_PRIVATE)
@@ -211,6 +213,7 @@ class GeofencingPlugin(context: Context, activity: Activity?) : MethodCallHandle
                 if (persistentGeofences == null) {
                     return
                 }
+                persistentGeofences = HashSet<String>(persistentGeofences)
                 persistentGeofences.remove(id)
                 p.edit()
                 .remove(getPersistentGeofenceKey(id))
