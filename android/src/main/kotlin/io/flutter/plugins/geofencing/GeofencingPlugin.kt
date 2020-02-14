@@ -192,14 +192,13 @@ class GeofencingPlugin(context: Context, activity: Activity?) : MethodCallHandle
         @JvmStatic
         private fun getRegisteredGeofenceIds(context: Context, result: Result) {
             synchronized(sGeofenceCacheLock) {
+                val list = ArrayList<String>()
                 var p = context.getSharedPreferences(SHARED_PREFERENCES_KEY, Context.MODE_PRIVATE)
                 var persistentGeofences = p.getStringSet(PERSISTENT_GEOFENCES_IDS, null)
-                if (persistentGeofences == null || persistentGeofences.size == 0) {
-                    return
-                }
-                val list = ArrayList<String>()
-                for (id in persistentGeofences) {
-                    list.add(id)
+                if (persistentGeofences != null && persistentGeofences.size > 0) {
+                    for (id in persistentGeofences) {
+                        list.add(id)
+                    }
                 }
                 result.success(list)
             }
