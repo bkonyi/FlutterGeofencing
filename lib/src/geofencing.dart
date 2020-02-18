@@ -7,7 +7,6 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/services.dart';
-
 import 'package:geofencing/src/callback_dispatcher.dart';
 import 'package:geofencing/src/location.dart';
 import 'package:geofencing/src/platform_settings.dart';
@@ -148,6 +147,11 @@ class GeofencingManager {
     args.addAll(region._toArgs());
     await _channel.invokeMethod('GeofencingPlugin.registerGeofence', args);
   }
+
+  /// get all geofence identifiers
+  static Future<List<String>> getRegisteredGeofenceIds() async =>
+      List<String>.from(await _channel
+          .invokeMethod('GeofencingPlugin.getRegisteredGeofenceIds'));
 
   /// Stop receiving geofence events for a given [GeofenceRegion].
   static Future<bool> removeGeofence(GeofenceRegion region) async =>
