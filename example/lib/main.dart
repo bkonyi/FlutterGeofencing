@@ -18,6 +18,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   String geofenceState = 'N/A';
+  List<String> registeredGeofences = [];
   double latitude = 37.419851;
   double longitude = -122.078818;
   double radius = 150.0;
@@ -104,15 +105,29 @@ class _MyAppState extends State<MyApp> {
                               GeofenceRegion(
                                   'mtv', latitude, longitude, radius, triggers,
                                   androidSettings: androidSettings),
-                              callback);
+                              callback).then((_) {
+                                GeofencingManager.getRegisteredGeofenceIds().then((value) {
+                                  setState(() {
+                                    registeredGeofences = value;
+                                  });
+                                });
+                          });
                         },
                       ),
                     ),
+                    Text('Registered Geofences: $registeredGeofences'),
                     Center(
                       child: RaisedButton(
                           child: const Text('Unregister'),
                           onPressed: () =>
-                              GeofencingManager.removeGeofenceById('mtv')),
+                              GeofencingManager.removeGeofenceById('mtv').then((_) {
+                                GeofencingManager.getRegisteredGeofenceIds().then((value){
+                                  setState(() {
+                                    registeredGeofences = value;
+                                  });
+                                });
+                              }),
+                      ),
                     ),
                     TextField(
                       decoration: const InputDecoration(

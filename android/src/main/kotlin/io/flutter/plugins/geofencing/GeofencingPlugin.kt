@@ -22,7 +22,6 @@ import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.PluginRegistry.Registrar
 import org.json.JSONArray
-import org.json.JSONObject
 
 class GeofencingPlugin(context: Context, activity: Activity?) : MethodCallHandler {
     private val mContext = context
@@ -133,8 +132,9 @@ class GeofencingPlugin(context: Context, activity: Activity?) : MethodCallHandle
                 var persistentGeofences = p.getStringSet(PERSISTENT_GEOFENCES_IDS, null)
                 if (persistentGeofences == null) {
                     persistentGeofences = HashSet<String>()
+                } else {
+                    persistentGeofences = HashSet<String>(persistentGeofences)
                 }
-
                 persistentGeofences.add(id)
                 context.getSharedPreferences(SHARED_PREFERENCES_KEY, Context.MODE_PRIVATE)
                     .edit()
@@ -178,14 +178,29 @@ class GeofencingPlugin(context: Context, activity: Activity?) : MethodCallHandle
             val ids = listOf(args!![0] as String)
             geofencingClient.removeGeofences(ids).run {
                 addOnSuccessListener {
-                    result.success(true)
                     for (id in ids) {
                         removeGeofenceFromCache(context, id)
                     }
+                    result.success(true)
                 }
                 addOnFailureListener {
                     result.error(it.toString(), null, null)
                 }
+            }
+        }
+
+        @JvmStatic
+        private fun getRegisteredGeofenceIds(context: Context, result: Result) {
+            synchronized(sGeofenceCacheLock) {
+                val list = ArrayList<String>()
+                var p = context.getSharedPreferences(SHARED_PREFERENCES_KEY, Context.MODE_PRIVATE)
+                var persistentGeofences = p.getStringSet(PERSISTENT_GEOFENCES_IDS, null)
+                if (persistentGeofences != null && persistentGeofences.size > 0) {
+                    for (id in persistentGeofences) {
+                        list.add(id)
+                    }
+                }
+                result.success(list)
             }
         }
 
@@ -197,6 +212,7 @@ class GeofencingPlugin(context: Context, activity: Activity?) : MethodCallHandle
                 if (persistentGeofences == null) {
                     return
                 }
+                persistentGeofences = HashSet<String>(persistentGeofences)
                 persistentGeofences.remove(id)
                 p.edit()
                 .remove(getPersistentGeofenceKey(id))
@@ -230,6 +246,7 @@ class GeofencingPlugin(context: Context, activity: Activity?) : MethodCallHandle
                                                                 mGeofencingClient,
                                                                 args,
                                                                 result)
+            "GeofencingPlugin.getRegisteredGeofenceIds" -> getRegisteredGeofenceIds(mContext, result)
             else -> result.notImplemented()
         }
     }

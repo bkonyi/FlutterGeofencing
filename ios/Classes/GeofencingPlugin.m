@@ -65,7 +65,10 @@ static BOOL backgroundIsolateRun = NO;
     result(@(YES));
   } else if ([@"GeofencingPlugin.removeGeofence" isEqualToString:call.method]) {
     result(@([self removeGeofence:arguments]));
-  } else {
+  } else if ([@"GeofencingPlugin.getRegisteredGeofenceIds" isEqualToString:call.method]) {
+      result([self getMonitoredRegionIds:arguments]);
+  }
+  else {
     result(FlutterMethodNotImplemented);
   }
 }
@@ -201,6 +204,14 @@ static BOOL backgroundIsolateRun = NO;
     }
   }
   return NO;
+}
+
+-(NSArray*)getMonitoredRegionIds:()arguments{
+    NSMutableArray *geofenceIds = [[NSMutableArray alloc] init];
+    for (CLRegion *region in [self->_locationManager monitoredRegions]) {
+        [geofenceIds addObject:region.identifier];
+    }
+    return [NSArray arrayWithArray:geofenceIds];
 }
 
 - (int64_t)getCallbackDispatcherHandle {
