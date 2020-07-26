@@ -25,7 +25,7 @@ static const NSString *kCallbackMapping = @"geofence_region_callback_mapping";
 static GeofencingPlugin *instance = nil;
 static FlutterPluginRegistrantCallback registerPlugins = nil;
 static BOOL initialized = NO;
-
+static BOOL backgroundIsolateRun = NO;
 #pragma mark FlutterPlugin Methods
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
@@ -67,7 +67,10 @@ static BOOL initialized = NO;
     result(@(YES));
   } else if ([@"GeofencingPlugin.removeGeofence" isEqualToString:call.method]) {
     result(@([self removeGeofence:arguments]));
-  } else {
+  } else if ([@"GeofencingPlugin.getRegisteredGeofenceIds" isEqualToString:call.method]) {
+      result([self getMonitoredRegionIds:arguments]);
+  }
+  else {
     result(FlutterMethodNotImplemented);
   }
 }
@@ -167,8 +170,11 @@ static BOOL initialized = NO;
   // with the runner in order for them to work on the background isolate. `registerPlugins` is
   // a callback set from AppDelegate.m in the main application. This callback should register
   // all relevant plugins (excluding those which require UI).
-  registerPlugins(_headlessRunner);
+  if (!backgroundIsolateRun) {
+    registerPlugins(_headlessRunner);
+  }
   [_registrar addMethodCallDelegate:self channel:_callbackChannel];
+  backgroundIsolateRun = YES;
 }
 
 - (void)registerGeofence:(NSArray *)arguments {
@@ -200,6 +206,14 @@ static BOOL initialized = NO;
     }
   }
   return NO;
+}
+
+-(NSArray*)getMonitoredRegionIds:()arguments{
+    NSMutableArray *geofenceIds = [[NSMutableArray alloc] init];
+    for (CLRegion *region in [self->_locationManager monitoredRegions]) {
+        [geofenceIds addObject:region.identifier];
+    }
+    return [NSArray arrayWithArray:geofenceIds];
 }
 
 - (int64_t)getCallbackDispatcherHandle {
