@@ -6,6 +6,8 @@ package io.flutter.plugins.geofencing
 
 import android.content.Context
 import android.content.Intent
+import android.os.IBinder
+import android.os.PowerManager
 import android.os.Handler
 import android.util.Log
 import androidx.core.app.JobIntentService
