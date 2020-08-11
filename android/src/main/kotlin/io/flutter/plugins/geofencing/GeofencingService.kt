@@ -19,6 +19,7 @@ import io.flutter.view.FlutterCallbackInformation
 import io.flutter.view.FlutterMain
 import io.flutter.view.FlutterNativeView
 import io.flutter.view.FlutterRunArguments
+import java.lang.IllegalStateException
 import java.util.ArrayDeque
 import java.util.UUID
 import java.util.concurrent.atomic.AtomicBoolean
@@ -63,8 +64,12 @@ class GeofencingService : MethodCallHandler, JobIntentService() {
                         GeofencingPlugin.SHARED_PREFERENCES_KEY,
                         Context.MODE_PRIVATE)
                         .getLong(GeofencingPlugin.CALLBACK_DISPATCHER_HANDLE_KEY, 0)
-
-                val callbackInfo = FlutterCallbackInformation.lookupCallbackInformation(callbackHandle)
+                var callbackInfo: FlutterCallbackInformation? = null
+                try{
+                    callbackInfo = FlutterCallbackInformation.lookupCallbackInformation(callbackHandle)
+                } catch (e: IllegalStateException){
+                    Log.e(TAG, "Fatal: IllegalStateException when looking up callback information", e)
+                }
                 if (callbackInfo == null) {
                     Log.e(TAG, "Fatal: failed to find callback")
                     return
