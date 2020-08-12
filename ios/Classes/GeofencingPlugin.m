@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+x// Copyright 2018 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file
 
@@ -127,11 +127,13 @@ static BOOL backgroundIsolateRun = NO;
   NSAssert([region isKindOfClass:[CLCircularRegion class]], @"region must be CLCircularRegion");
   CLLocationCoordinate2D center = region.center;
   int64_t handle = [self getCallbackHandleForRegionId:region.identifier];
-  [_callbackChannel
-      invokeMethod:@""
-         arguments:@[
-           @(handle), @[ region.identifier ], @[ @(center.latitude), @(center.longitude) ], @(event)
-         ]];
+  if (handle != 0) {
+      [_callbackChannel
+       invokeMethod:@""
+        arguments:@[
+            @(handle), @[ region.identifier ], @[ @(center.latitude), @(center.longitude) ], @(event)
+        ]];
+  }
 }
 
 - (instancetype)init:(NSObject<FlutterPluginRegistrar> *)registrar {
