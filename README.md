@@ -27,6 +27,7 @@ Also request the correct permissions for geofencing:
 
 ```xml
 <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+<uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
 ```
 
 Finally, create either `Application.kt` or `Application.java` in the same directory as `MainActivity`.
