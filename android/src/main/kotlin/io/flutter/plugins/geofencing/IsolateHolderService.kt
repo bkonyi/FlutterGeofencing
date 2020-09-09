@@ -12,17 +12,19 @@ import android.content.Intent
 import android.os.IBinder
 import android.os.PowerManager
 import androidx.core.app.NotificationCompat
-import android.util.Log
 import io.flutter.view.FlutterNativeView
 
 class IsolateHolderService : Service() {
     companion object {
         @JvmStatic
         val ACTION_SHUTDOWN = "SHUTDOWN"
+
         @JvmStatic
         private val WAKELOCK_TAG = "IsolateHolderService::WAKE_LOCK"
+
         @JvmStatic
         private val TAG = "IsolateHolderService"
+
         @JvmStatic
         private var sBackgroundFlutterView: FlutterNativeView? = null
 
@@ -32,8 +34,8 @@ class IsolateHolderService : Service() {
         }
     }
 
-    override fun onBind(p0: Intent) : IBinder? {
-        return null;
+    override fun onBind(p0: Intent): IBinder? {
+        return null
     }
 
     override fun onCreate() {
@@ -42,7 +44,7 @@ class IsolateHolderService : Service() {
         val channel = NotificationChannel(CHANNEL_ID,
                 "Flutter Geofencing Plugin",
                 NotificationManager.IMPORTANCE_LOW)
-        val imageId = getResources().getIdentifier("ic_launcher", "mipmap", getPackageName())
+        val imageId = resources.getIdentifier("ic_launcher", "mipmap", packageName)
 
         (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).createNotificationChannel(channel)
         val notification = NotificationCompat.Builder(this, CHANNEL_ID)
@@ -61,11 +63,11 @@ class IsolateHolderService : Service() {
         startForeground(1, notification)
     }
 
-    override fun onStartCommand(intent: Intent, flags: Int, startId: Int) : Int {
-        if (intent.getAction() == ACTION_SHUTDOWN) {
+    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
+        if (intent.action == ACTION_SHUTDOWN) {
             (getSystemService(Context.POWER_SERVICE) as PowerManager).run {
                 newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, WAKELOCK_TAG).apply {
-                    if (isHeld()) {
+                    if (isHeld) {
                         release()
                     }
                 }
@@ -73,6 +75,6 @@ class IsolateHolderService : Service() {
             stopForeground(true)
             stopSelf()
         }
-        return START_STICKY;
+        return START_STICKY
     }
 }
