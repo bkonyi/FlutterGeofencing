@@ -1,11 +1,12 @@
 name: geofencing
 description: A geofencing plugin for Flutter applications.
-version: 0.0.1
+version: 0.1.0
 author: Ben Konyi <bkonyi@google.com>
 homepage: https://github.com/flutter/plugins
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
+  flutter: "^1.12.0"
 
 dependencies:
   flutter:
