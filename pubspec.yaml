@@ -18,5 +18,9 @@ dev_dependencies:
 
 flutter:
   plugin:
-    androidPackage: io.flutter.plugins.geofencing
-    pluginClass: GeofencingPlugin
+    platforms:
+      android:
+        package: io.flutter.plugins.geofencing
+        pluginClass: GeofencingPlugin
+      ios:
+        pluginClass: GeofencingPlugin
