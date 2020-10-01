@@ -229,7 +229,6 @@ class GeofencingPlugin(context: Context, activity: Activity?) : MethodCallHandle
     val args = call.arguments<ArrayList<*>>()
     when(call.method) {
       "GeofencingPlugin.initializeService" -> {
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
           mActivity?.requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_BACKGROUND_LOCATION), 12312)
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
