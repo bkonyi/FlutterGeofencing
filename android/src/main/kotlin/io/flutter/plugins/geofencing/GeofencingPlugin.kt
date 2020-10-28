@@ -45,8 +45,6 @@ class GeofencingPlugin : ActivityAware, FlutterPlugin, MethodCallHandler {
     @JvmStatic
     val PERSISTENT_GEOFENCES_IDS = "persistent_geofences_ids"
     @JvmStatic
-    private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
-    @JvmStatic
     private val sGeofenceCacheLock = Object()
 
     @JvmStatic
@@ -255,8 +253,10 @@ class GeofencingPlugin : ActivityAware, FlutterPlugin, MethodCallHandler {
     val args = call.arguments<ArrayList<*>>()
     when(call.method) {
       "GeofencingPlugin.initializeService" -> {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-          mActivity?.requestPermissions(REQUIRED_PERMISSIONS, 12312)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+          mActivity?.requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_BACKGROUND_LOCATION), 12312)
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+          mActivity?.requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 12312)
         }
         initializeService(mContext!!, args)
         result.success(true)
