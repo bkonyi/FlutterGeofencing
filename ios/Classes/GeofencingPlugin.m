@@ -127,7 +127,7 @@ static BOOL backgroundIsolateRun = NO;
   NSAssert([region isKindOfClass:[CLCircularRegion class]], @"region must be CLCircularRegion");
   CLLocationCoordinate2D center = region.center;
   int64_t handle = [self getCallbackHandleForRegionId:region.identifier];
-  if (handle != 0) {
+  if (handle != 0 && _callbackChannel != nil) {
       [_callbackChannel
        invokeMethod:@""
         arguments:@[
