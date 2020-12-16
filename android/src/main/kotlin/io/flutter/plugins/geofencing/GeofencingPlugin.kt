@@ -199,6 +199,30 @@ class GeofencingPlugin : ActivityAware, FlutterPlugin, MethodCallHandler {
     }
 
     @JvmStatic
+    private fun getRegisteredGeofences(context: Context, result: Result) {
+      synchronized(sGeofenceCacheLock) {
+        val list = ArrayList<Map<String,String?>>()
+        var p = context.getSharedPreferences(SHARED_PREFERENCES_KEY, Context.MODE_PRIVATE)
+        var persistentGeofences = p.getStringSet(PERSISTENT_GEOFENCES_IDS, null)
+        if (persistentGeofences != null && persistentGeofences.size > 0) {
+          for (id in persistentGeofences) {
+            var persistentGeofencesData = (p.getString(getPersistentGeofenceKey(id), null))?.split(",");
+            var id = persistentGeofencesData?.get(1)
+            var lat = persistentGeofencesData?.get(2)
+            var long = persistentGeofencesData?.get(3)
+            var radius = persistentGeofencesData?.get(4)
+
+            val dataMap = mapOf("id" to id, "lat" to lat, "long" to long, "radius" to radius)
+            list.add(dataMap);
+
+          }
+        }
+        result.success(list)
+      }
+    }
+    
+
+    @JvmStatic
     private fun removeGeofenceFromCache(context: Context, id: String) {
       synchronized(sGeofenceCacheLock) {
         var p = context.getSharedPreferences(SHARED_PREFERENCES_KEY, Context.MODE_PRIVATE)
@@ -271,6 +295,7 @@ class GeofencingPlugin : ActivityAware, FlutterPlugin, MethodCallHandler {
               args,
               result)
       "GeofencingPlugin.getRegisteredGeofenceIds" -> getRegisteredGeofenceIds(mContext!!, result)
+      "GeofencingPlugin.getRegisteredGeofenceRegions" -> getRegisteredGeofences(mContext!!, result)
       else -> result.notImplemented()
     }
   }
