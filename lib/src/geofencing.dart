@@ -153,6 +153,19 @@ class GeofencingManager {
       List<String>.from(await _channel
           .invokeMethod('GeofencingPlugin.getRegisteredGeofenceIds'));
 
+  /// get all geofence regions and their properties
+  /// returns a [Map] with the following keys
+  /// [id] the identifier
+  /// [lat] latitude
+  /// [long] longitude
+  /// [radius] radius
+  ///
+  /// if there are no geofences registered it returns []
+  static Future<List<Map<dynamic, dynamic>>>
+      getRegisteredGeofenceRegions() async =>
+          List<Map<dynamic, dynamic>>.from(await _channel
+              .invokeMethod('GeofencingPlugin.getRegisteredGeofenceRegions'));
+
   /// Stop receiving geofence events for a given [GeofenceRegion].
   static Future<bool> removeGeofence(GeofenceRegion region) async =>
       (region == null) ? false : await removeGeofenceById(region.id);
