@@ -17,7 +17,7 @@ void callbackDispatcher() {
 
   _backgroundChannel.setMethodCallHandler((MethodCall call) async {
     final List<dynamic> args = call.arguments;
-    final Function callback = PluginUtilities.getCallbackFromHandle(
+    final Function? callback = PluginUtilities.getCallbackFromHandle(
         CallbackHandle.fromRawHandle(args[0]));
     assert(callback != null);
     final List<String> triggeringGeofences = args[1].cast<String>();
@@ -29,7 +29,7 @@ void callbackDispatcher() {
         .forEach((dynamic e) => locationList.add(double.parse(e.toString())));
     final Location triggeringLocation = locationFromList(locationList);
     final GeofenceEvent event = intToGeofenceEvent(args[3]);
-    callback(triggeringGeofences, triggeringLocation, event);
+    callback?.call(triggeringGeofences, triggeringLocation, event);
   });
   _backgroundChannel.invokeMethod('GeofencingService.initialized');
 }

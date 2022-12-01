@@ -65,7 +65,7 @@ class _MyAppState extends State<MyApp> {
           longitude,
           radius,
           triggers,
-          androidSettings: androidSettings,
+          androidSettings,
         ),
         callback,
       );
