@@ -143,8 +143,8 @@ static BOOL backgroundIsolateRun = NO;
   _eventQueue = [[NSMutableArray alloc] init];
   _locationManager = [[CLLocationManager alloc] init];
   [_locationManager setDelegate:self];
-  // [_locationManager requestAlwaysAuthorization];
-  // _locationManager.allowsBackgroundLocationUpdates = YES;
+  [_locationManager requestAlwaysAuthorization];
+  _locationManager.allowsBackgroundLocationUpdates = YES;
 
   _headlessRunner = [[FlutterEngine alloc] initWithName:@"GeofencingIsolate" project:nil allowHeadlessExecution:YES];
   _registrar = registrar;
