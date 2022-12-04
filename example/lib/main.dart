@@ -21,8 +21,8 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   String geofenceState = 'N/A';
   List<String> registeredGeofences = [];
-  double latitude = 49.98414;
-  double longitude = 36.26894;
+  double latitude = 50.00187;
+  double longitude = 36.23866;
   double radius = 200.0;
   ReceivePort port = ReceivePort();
   final List<GeofenceEvent> triggers = <GeofenceEvent>[
@@ -84,6 +84,7 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
+  @pragma('vm:entry-point')
   static void callback(List<String> ids, Location l, GeofenceEvent e) async {
     print('Fences: $ids Location $l Event: $e');
     final SendPort send =
