@@ -26,6 +26,7 @@ geofencing:
 Also request the correct permissions for geofencing:
 
 ```xml
+<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION_LOCATION"/>
 <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
 ```
@@ -42,7 +43,6 @@ class Application : FlutterApplication(), PluginRegistrantCallback {
   }
 
   override fun registerWith(registry: PluginRegistry) {
-    GeneratedPluginRegistrant.registerWith(registry);
   }
 }
 ```
@@ -59,7 +59,6 @@ public class Application extends FlutterApplication implements PluginRegistrantC
 
   @Override
   public void registerWith(PluginRegistry registry) {
-    GeneratedPluginRegistrant.registerWith(registry);
   }
 }
 ```
@@ -103,6 +102,36 @@ And request the correct permissions for geofencing:
     </array>
     ...
 </dict>
+```
+
+Add this line to `Runner-Briding-Header.h`
+
+```h
+#import <geofencing/GeofencingPlugin.h>
+```
+
+At the end add this line to `AppDelegate.swift`
+
+```swift
+GeofencingPlugin.setPluginRegistrantCallback { (registry) in GeneratedPluginRegistrant.register(with: registry) }
+```
+
+### Notes
+Before register geofence request permissions for location and location always. You can use *permission_handler* package. Don't forget include this line in `Podfile`
+
+```ruby
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    flutter_additional_ios_build_settings(target)
+    target.build_configurations.each do |config|
+        config.build_settings['ENABLE_BITCODE'] = 'NO'
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= [
+          '$(inherited)',
+          'PERMISSION_LOCATION=1',
+        ]
+      end
+  end
+end
 ```
 
 ### Need Help?
